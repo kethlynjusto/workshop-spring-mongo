@@ -1,5 +1,6 @@
 package com.kethlyn.workshop_spring_mongo.resources;
 
+import com.kethlyn.workshop_spring_mongo.domain.Post;
 import com.kethlyn.workshop_spring_mongo.domain.User;
 import com.kethlyn.workshop_spring_mongo.dto.UserDTO;
 import com.kethlyn.workshop_spring_mongo.services.UserService;
@@ -19,14 +20,12 @@ public class UserResource {
     @Autowired
     private UserService service;
 
-
     @GetMapping
     public ResponseEntity< List<UserDTO>> findAll(){
         List<User> list = service.findAll();
         List<UserDTO> listDTO = list.stream().map(x -> new UserDTO(x)).collect(Collectors.toList());
         return ResponseEntity.ok().body(listDTO);
     }
-
 
     @RequestMapping(value="/{id}", method = RequestMethod.GET)
     public ResponseEntity<UserDTO> findById(@PathVariable String id) {
@@ -54,5 +53,11 @@ public class UserResource {
     public ResponseEntity<Void> delete(@PathVariable String id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/{id}/posts", method = RequestMethod.GET)
+    public ResponseEntity<List<Post>> findPosts(@PathVariable String id) {
+        User obj = service.findbyId(id);
+        return ResponseEntity.ok().body(obj.getPosts());
     }
 }
